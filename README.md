@@ -61,20 +61,20 @@ http://localhost
 
 Чтобы изменить доменное имя (например, на `myproject.local`), измените строку:
 
-```http
-server_name localhost;
+```bash
+  server_name localhost;
 ```
 
 на:
 
-```http
-server_name myproject.local;
+```bash
+  server_name myproject.local;
 ```
 
 Затем пропишите этот домен в `/etc/hosts`:
 
-```http
-127.0.0.1 myproject.local
+```bash
+  127.0.0.1 myproject.local
 ```
 
 ---
