@@ -8,18 +8,73 @@ RESTful API для сокращения ссылок.
 
 ## Запуск проекта
 
+1. Склонировать проект
+
 ```bash
-git clone https://github.com/your/repo.git
-cd repo
-composer install
+  git clone https://github.com/iogami/test.git
+```
 
-cp .env.example .env
-php artisan key:generate
+2. В папке `laravel-api`. Переименвать файл .env.example в .env
 
-# Настрой .env с доступом к MySQL
-php artisan migrate
+```bash
+  cp laravel-api/.env.example laravel-api/.env
+```
 
-php artisan serve
+3. Запустите контейнеры (в папке, где находиться `docker-compose.yml`)
+
+```bash
+  docker compose up -d --build
+```
+
+4. Изменить права в папках для cache
+
+```bash
+  docker compose exec app bash -c "chown -R www-data:www-data storage bootstrap/cache && chmod -R 775 storage bootstrap/cache"
+```
+
+
+5. Установите зависимости Laravel
+
+```bash
+  docker compose exec app composer install
+```
+
+6. Создайте ключ приложения
+
+```bash
+  docker compose exec app php artisan key:generate
+```
+
+7. Выполните миграции
+
+```bash
+  docker compose exec app php artisan migrate
+```
+
+---
+
+Приложение будет доступно по адресу:
+
+http://localhost
+
+Чтобы Изменить localhost в `nginx/default.conf`
+
+Чтобы изменить доменное имя (например, на `myproject.local`), измените строку:
+
+```http
+server_name localhost;
+```
+
+на:
+
+```http
+server_name myproject.local;
+```
+
+Затем пропишите этот домен в `/etc/hosts`:
+
+```http
+127.0.0.1 myproject.local
 ```
 
 ---
