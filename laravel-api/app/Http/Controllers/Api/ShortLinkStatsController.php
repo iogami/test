@@ -11,18 +11,7 @@ class ShortLinkStatsController extends Controller
 {
     public function show(string $code): JsonResponse
     {
-        $validator = Validator::make(['code' => $code], [
-            'code' => ['required', 'regex:/^[A-Za-z0-9]{6}$/'],
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation error.',
-                'errors'  => $validator->errors(),
-            ], 422);
-        }
-
-        $link = ShortLink::where('code', $code)->withCount('visits')->first();
+        $link = ShortLink::findWithStatsByCode($code);
 
         if (!$link) {
             return response()->json([

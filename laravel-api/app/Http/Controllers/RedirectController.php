@@ -12,18 +12,14 @@ class RedirectController extends Controller
 {
     public function redirect(Request $request, string $code): RedirectResponse
     {
-        $link = ShortLink::where('code', $code)->first();
+        $link = ShortLink::findByCode($code);
 
         if (!$link) {
             abort(404, 'Short link not found.');
         }
 
         // Запись посещения
-        ShortLinkVisit::create([
-            'short_link_id' => $link->id,
-            'ip_address'    => $request->ip(),
-            'visited_at'    => now()
-        ]);
+        ShortLinkVisit::recordVisit( $link->id, $request->ip());
 
         return redirect()->away($link->original_url);
     }

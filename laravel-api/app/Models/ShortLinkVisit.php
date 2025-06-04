@@ -23,5 +23,14 @@ class ShortLinkVisit extends Model
     {
         return $this->belongsTo(ShortLink::class);
     }
+
+    public static function recordVisit(int $linkID, string $ipAddress): void
+    {
+        ShortLinkVisit::create([
+            'short_link_id' => $linkID,
+            'ip_address'    => $ipAddress,
+            'visited_at'    => now()
+        ]);
+    }
 }
 

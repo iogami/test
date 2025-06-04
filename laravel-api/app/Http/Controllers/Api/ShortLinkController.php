@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\ShortLink;
+use App\Services\ShortLinkService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
@@ -11,6 +12,10 @@ use Illuminate\Http\JsonResponse;
 
 class ShortLinkController extends Controller
 {
+    public function __construct(protected ShortLinkService $shortLinkService)
+    {
+    }
+
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -24,30 +29,15 @@ class ShortLinkController extends Controller
             ], 400);
         }
 
-        $originalUrl = $request->input('url');
-        $code        = $this->generateUniqueCode();
-
-        $shortLink = ShortLink::create([
-            'original_url' => $originalUrl,
-            'code'         => $code,
-        ]);
+        $shortLink = $this->shortLinkService->create($request->input('url'));
 
         return response()->json([
             'message' => 'Short link created successfully.',
             'data'    => [
                 'original_url' => $shortLink->original_url,
-                'short_url'    => url($code),
+                'short_url'    => url($shortLink->code),
                 'code'         => $shortLink->code
             ],
         ], 200);
-    }
-
-    protected function generateUniqueCode(): string
-    {
-        do {
-            $code = Str::random(6);
-        } while (ShortLink::where('code', $code)->exists());
-
-        return $code;
     }
 }
