@@ -7,6 +7,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Config;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -38,8 +39,16 @@ class AppServiceProvider extends ServiceProvider
      */
     protected function configureRateLimiting(): void
     {
-        RateLimiter::for('short_links', function (Request $request) {
-            return Limit::perMinute(120)->by($request->ip());
+        // Rate limit for short link creation
+        RateLimiter::for('short_links_creation', function (Request $request) {
+            $config = Config::get('shortlink.rate_limits.creation');
+            return Limit::perMinute($config['max_attempts'])->by($request->ip());
+        });
+
+        // Rate limit for short link access
+        RateLimiter::for('short_links_access', function (Request $request) {
+            $config = Config::get('shortlink.rate_limits.access');
+            return Limit::perMinute($config['max_attempts'])->by($request->ip());
         });
     }
 }
